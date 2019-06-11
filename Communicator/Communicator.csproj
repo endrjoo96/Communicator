@@ -46,6 +46,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AppState.cs" />
+    <Compile Include="BroadcastTask.cs" />
     <Compile Include="CleanerTask.cs" />
     <Compile Include="Definitions.cs" />
     <Compile Include="EnterNameForm.cs">

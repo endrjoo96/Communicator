@@ -10,5 +10,6 @@ namespace Communicator
     {
         public const string NAME = "name" + "|";
         public const string BUSY = "busy" + "|";
+
     }
 }

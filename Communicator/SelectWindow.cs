@@ -50,7 +50,6 @@ namespace Communicator
             listView_guests.AutoResizeColumns(ColumnHeaderAutoResizeStyle.HeaderSize);
             User usr = new User("genericuser1", "0.0.0.0", true);
             guestList.Add(usr);
-
         }
 
         private void Cleaner_RemovingIdlers()
