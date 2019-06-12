@@ -18,8 +18,28 @@ namespace Communicator
         {
             task = new Thread(() =>
             {
-                UdpClient client = new UdpClient(45000);
-                IPEndPoint remoteEndPoint = new IPEndPoint(IPAddress.Any, 0);
+                UdpClient client = new UdpClient();
+                IPEndPoint remoteEndPoint = new IPEndPoint(IPAddress.Broadcast, 45000);
+
+                while (true)
+                {
+                    Thread.Sleep(3 * 1000);
+
+                    string state;
+                    if (SelectWindow.GetAppState().isBusy)
+                    {
+                        state = Definitions.BUSY;
+                    }
+                    else
+                    {
+                        state = Definitions.NAME;
+                    }
+
+                    byte[] data = Encoding.ASCII.GetBytes(state + SelectWindow.GetAppState().currentUsername);
+
+                    client.SendAsync(data, data.Length, remoteEndPoint);
+
+                }
             });
         }
     }

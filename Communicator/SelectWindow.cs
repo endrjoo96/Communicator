@@ -40,6 +40,7 @@ namespace Communicator
                 if (form.ShowDialog() == DialogResult.OK)
                 {
                     Label_Username.Text = form.result;
+                    appstate.currentUsername = form.result;
                 }
             }
 
@@ -104,6 +105,11 @@ namespace Communicator
         public static void UpdateCurrentGuests(User arg)
         {
             guestList.Add(arg);
+        }
+
+        public static String GetUsername()
+        {
+            return
         }
     }
 }

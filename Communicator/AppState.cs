@@ -10,6 +10,8 @@ namespace Communicator
     public class AppState
     {
         public IPAddress MachineIP { get; set; }
-        public readonly int RefreshInterval = 3 * 1000;
+        public readonly int RefreshInterval = 5 * 1000;
+        public bool isBusy = false;
+        public string currentUsername = "";
     }
 }

@@ -30,6 +30,7 @@ namespace Communicator
 
                 UdpClient client = new UdpClient(45000);
                 IPEndPoint remoteEndPoint = new IPEndPoint(IPAddress.Any, 0);
+                string currentUser = SelectWindow.GetAppState().currentUsername;
                 while (true)
                 {
                     
@@ -39,7 +40,7 @@ namespace Communicator
                     Byte[] receivedBytes = client.Receive(ref remoteEndPoint);
                     string data = Encoding.ASCII.GetString(receivedBytes);
                     string sub = data.Substring(0, Definitions.NAME.Length);
-                    if (sub.Equals(Definitions.NAME) || sub.Equals(Definitions.BUSY))
+                    if ((sub.Equals(Definitions.NAME) || sub.Equals(Definitions.BUSY)))
                     {
                         bool busy = false;
                         if (sub.Equals(Definitions.BUSY)) { busy = true; }
@@ -54,9 +55,12 @@ namespace Communicator
                             {
                                 if (u.Nickname.Equals(incomingUser.Nickname))
                                 {
-                                    add = false;
-                                    u.UpdateConnTime();
-                                    break;
+                                    if (!(u.Nickname.Equals(currentUser)))
+                                    {
+                                        add = false;
+                                        u.UpdateConnTime();
+                                        break;
+                                    }
                                 }
                             }
                         }
