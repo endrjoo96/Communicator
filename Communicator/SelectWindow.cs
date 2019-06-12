@@ -106,10 +106,5 @@ namespace Communicator
         {
             guestList.Add(arg);
         }
-
-        public static String GetUsername()
-        {
-            return
-        }
     }
 }
