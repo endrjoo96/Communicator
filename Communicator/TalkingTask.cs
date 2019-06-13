@@ -72,8 +72,8 @@ namespace Communicator
             task_play = new Thread(() =>
             {
                 UdpClient client = new UdpClient(45002);
-                IPEndPoint remoteEndPoint = new IPEndPoint(IPAddress.Any, 0);
-                WaveOutEvent wo = new WaveOutEvent();
+                IPEndPoint remoteEndPoint = new IPEndPoint(IP, 0);
+                
 
                 while (true)
                 {
@@ -86,7 +86,8 @@ namespace Communicator
                     }
                     else
                     {
-                        wo.Init(new RawSourceWaveStream(rec, 0, rec.Length, new WaveFormat(Toolbox.RATE, 1)));
+                        WaveOutEvent wo = new WaveOutEvent();
+                        wo.Init(new RawSourceWaveStream(rec, 0, rec.Length, new WaveFormat(Toolbox.RATE*2, 1)));
                         wo.Play();
                     }
                 }
@@ -99,7 +100,7 @@ namespace Communicator
         private void AudioDataAvailable(object sender, WaveInEventArgs e)
         {
             UdpClient client = new UdpClient();
-            IPEndPoint remoteEndPoint = new IPEndPoint(IPAddress.Broadcast, 45002);
+            IPEndPoint remoteEndPoint = new IPEndPoint(IP, 45002);
             client.Send(e.Buffer, e.BytesRecorded, remoteEndPoint);
         }
 

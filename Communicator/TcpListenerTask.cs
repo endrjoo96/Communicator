@@ -40,17 +40,16 @@ namespace Communicator
                             byte[] data = Toolbox.StringToByte(Definitions.OK_TALK + SelectWindow.GetAppState().currentUsername);
                             client.Send(data, data.Length, new IPEndPoint(remoteEndPoint.Address, 45001));
 
+                            receivedIP = remoteEndPoint.Address;
                             ReceivedConnectionEvent?.Invoke();
                             client.Close();
-                            receivedIP = remoteEndPoint.Address;
                             break;
                         }
                         else if (header.Equals(Definitions.OK_TALK))
                         {
+                            receivedIP = remoteEndPoint.Address;
                             ReceivedConnectionEvent?.Invoke();
                             client.Close();
-
-                                receivedIP = remoteEndPoint.Address;
                             
                             break;
                         }
