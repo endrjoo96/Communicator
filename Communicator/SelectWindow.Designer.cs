@@ -73,6 +73,7 @@
             this.disconnect_button.TabIndex = 4;
             this.disconnect_button.Text = "Rozłącz";
             this.disconnect_button.UseVisualStyleBackColor = true;
+            this.disconnect_button.Click += new System.EventHandler(this.disconnect_button_Click);
             // 
             // connectedWith_label
             // 

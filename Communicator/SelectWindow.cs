@@ -6,6 +6,7 @@ using System.Data;
 using System.Drawing;
 using System.Linq;
 using System.Net;
+using System.Net.Sockets;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -52,6 +53,10 @@ namespace Communicator
                     Label_Username.Text = form.result;
                     appstate.currentUsername = form.result;
                 }
+                else
+                {
+                    Application.Exit();
+                }
             }
             broadcaster.Run();
             listView_guests.Scrollable = true;
@@ -65,6 +70,7 @@ namespace Communicator
         {
             appstate.isBusy = true;
             talking = new TalkingTask(tcplistener.receivedIP);
+            talking.DisconnectionRequestEvent += Talking_DisconnectionRequestEvent;
             talking.Run();
             string usr="";
             foreach (User u in guestList.ToList())
@@ -76,6 +82,27 @@ namespace Communicator
                     connectedWith_label.Text = "Połączono z " + usr;
                     disconnect_button.Enabled = true;
                 }));
+        }
+
+        private void Talking_DisconnectionRequestEvent()
+        {
+            talking.DisconnectionRequestEvent -= Talking_DisconnectionRequestEvent;
+            talking.Stop();
+            appstate.isBusy = false;
+
+            tcplistener = new TcpListenerTask();
+            tcplistener.Run();
+
+            if (InvokeRequired)
+                Invoke(new MethodInvoker(() => {
+                    connectedWith_label.Text = "Nie połączono";
+                    disconnect_button.Enabled = false;
+                }));
+            else
+            {
+                connectedWith_label.Text = "Nie połączono";
+                disconnect_button.Enabled = false;
+            }
         }
 
         private void Cleaner_RemovingIdlers()
@@ -138,6 +165,33 @@ namespace Communicator
             IPAddress address = IPAddress.Parse(listView_guests.SelectedItems[0].ImageKey);
             SendRequestTask sendertask = new SendRequestTask() { IP = address };
             sendertask.Run();
+        }
+
+        private void disconnect_button_Click(object sender, EventArgs e)
+        {
+            UdpClient client = new UdpClient();
+            byte[] data = Toolbox.StringToByte(Definitions.DISCONNECTING);
+            client.Send(data, data.Length, new IPEndPoint(tcplistener.receivedIP, 45002));
+
+            talking.DisconnectionRequestEvent -= Talking_DisconnectionRequestEvent;
+            talking.Stop();
+            appstate.isBusy = false;
+
+            tcplistener = new TcpListenerTask();
+            tcplistener.Run();
+
+            if (InvokeRequired)
+                Invoke(new MethodInvoker(() => {
+                    connectedWith_label.Text = "Nie połączono";
+                    disconnect_button.Enabled = false;
+                }));
+            else
+            {
+                connectedWith_label.Text = "Nie połączono";
+                disconnect_button.Enabled = false;
+            }
+
+            //TODO: skonczyc
         }
     }
 }

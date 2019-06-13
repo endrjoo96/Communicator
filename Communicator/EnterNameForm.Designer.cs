@@ -67,6 +67,7 @@
             this.Controls.Add(this.Button_OK);
             this.Controls.Add(this.TextBox_Name);
             this.Controls.Add(this.label1);
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedToolWindow;
             this.Name = "EnterNameForm";
             this.Text = "Wprowadź nazwę";
             this.ResumeLayout(false);

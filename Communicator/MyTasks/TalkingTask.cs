@@ -18,15 +18,16 @@ namespace Communicator
         private Thread task_send;
         private Thread task_play;
         private IPAddress IP;
-        public byte[] sample = new byte[Toolbox.BUFFERSIZE];
         private bool _stop = false;
+
+        public delegate void DisconnectionRequest();
+        public event DisconnectionRequest DisconnectionRequestEvent;
 
         public TalkingTask(IPAddress ip)
         {
             IP = ip;
             task_send = new Thread(() =>
             {
-                byte[] sendsample = new byte[Toolbox.BUFFERSIZE];
                 bool recording = false;
                 bool stop = false;
 
@@ -39,7 +40,7 @@ namespace Communicator
 
                 while (true)
                 {
-                    
+                    Parallel.Invoke(new Action(() => { stop = _stop; }));
                     if (stop)
                     {
                         if (recording)
@@ -48,6 +49,7 @@ namespace Communicator
                             recording = false;
                             wi.DataAvailable -= AudioDataAvailable;
                         }
+                        else break;
                     }
                     else
                     {
@@ -73,21 +75,25 @@ namespace Communicator
             {
                 UdpClient client = new UdpClient(45002);
                 IPEndPoint remoteEndPoint = new IPEndPoint(IP, 0);
-                
+                bool stop = false;
 
                 while (true)
                 {
+                    Parallel.Invoke(new Action(() => { stop = _stop; }));
+                    if (stop) break;
                     Byte[] rec = client.Receive(ref remoteEndPoint);
                     string recstr = Encoding.ASCII.GetString(rec);
                     string header = recstr.Substring(0, Definitions.DISCONNECTING.Length);
                     if (header.Equals(Definitions.DISCONNECTING))
                     {
-                        
+                        DisconnectionRequestEvent?.Invoke();
+                        _stop = true;
+                        break;
                     }
                     else
                     {
                         WaveOutEvent wo = new WaveOutEvent();
-                        wo.Init(new RawSourceWaveStream(rec, 0, rec.Length, new WaveFormat(Toolbox.RATE*2, 1)));
+                        wo.Init(new RawSourceWaveStream(rec, 0, rec.Length, new WaveFormat(Toolbox.RATE, 2)));
                         wo.Play();
                     }
                 }
