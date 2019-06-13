@@ -26,6 +26,7 @@ namespace Communicator
                     RemovingIdlers?.Invoke();
                 }
             });
+            task.IsBackground = true;
         }
 
         public void Run()

@@ -15,7 +15,7 @@ using System.Windows.Forms;
 
 namespace Communicator
 {
-    class ListenerTask
+    class ListenerTask : Form
     {
         private Thread task;
         private bool stop = false;
@@ -33,8 +33,8 @@ namespace Communicator
                 string currentUser = SelectWindow.GetAppState().currentUsername;
                 while (true)
                 {
-                    
-                    Parallel.Invoke(new Action(() => { _stop = stop; }));
+                    Invoke(new MethodInvoker(() => { _stop = stop; }));
+
                     if (_stop) break;
 
                     Byte[] receivedBytes = client.Receive(ref remoteEndPoint);
@@ -47,7 +47,9 @@ namespace Communicator
                         User incomingUser = new User(data.Substring(data.IndexOf("|")+1), remoteEndPoint.Address, busy);
                         bool add = true;
 
-                        Parallel.Invoke(new Action(() => { guestsList = SelectWindow.GetCurrentGuests().ToList(); }));
+                        Invoke(new MethodInvoker(() => { guestsList = SelectWindow.GetCurrentGuests().ToList(); }));
+
+                        //Parallel.Invoke(new Action(() => { guestsList = SelectWindow.GetCurrentGuests().ToList(); }));
 
                         foreach(User u in guestsList)
                         {
@@ -66,11 +68,13 @@ namespace Communicator
                         }
                         if (add)
                         {
-                            Parallel.Invoke(new Action(() => { SelectWindow.UpdateCurrentGuests(incomingUser); }));
+                            Invoke(new MethodInvoker(() => { SelectWindow.UpdateCurrentGuests(incomingUser); }));
+                            //Parallel.Invoke(new Action(() => { SelectWindow.UpdateCurrentGuests(incomingUser); }));
                         }
                     }
                 }
             });
+            task.IsBackground = true;
         }
 
         public void Run()

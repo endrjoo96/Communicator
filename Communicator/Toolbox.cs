@@ -10,11 +10,19 @@ namespace Communicator
 {
     public static class Toolbox
     {
+        public readonly static int BUFFERSIZE = (int)Math.Pow(2, 12) * 2;
+        public readonly static int RATE = 22100;
+
         public static byte[] AddressStringToByte(string IP)
         {
             IPAddress address = IPAddress.Parse(IP);
             byte[] bytes = address.GetAddressBytes();
             return bytes;
+        }
+
+        public static byte[] StringToByte(string arg)
+        {
+            return Encoding.ASCII.GetBytes(arg);
         }
 
         public static IPAddress GetMachineIP()

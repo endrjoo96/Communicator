@@ -41,6 +41,12 @@ namespace Communicator
 
                 }
             });
+            task.IsBackground = true;
+        }
+
+        public void Run()
+        {
+            task.Start();
         }
     }
 }

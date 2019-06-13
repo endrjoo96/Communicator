@@ -31,6 +31,8 @@
             this.label1 = new System.Windows.Forms.Label();
             this.Label_Username = new System.Windows.Forms.Label();
             this.listView_guests = new System.Windows.Forms.ListView();
+            this.disconnect_button = new System.Windows.Forms.Button();
+            this.connectedWith_label = new System.Windows.Forms.Label();
             this.SuspendLayout();
             // 
             // label1
@@ -59,11 +61,31 @@
             this.listView_guests.TabIndex = 3;
             this.listView_guests.UseCompatibleStateImageBehavior = false;
             // 
+            // disconnect_button
+            // 
+            this.disconnect_button.Location = new System.Drawing.Point(191, 301);
+            this.disconnect_button.Name = "disconnect_button";
+            this.disconnect_button.Size = new System.Drawing.Size(75, 23);
+            this.disconnect_button.TabIndex = 4;
+            this.disconnect_button.Text = "Rozłącz";
+            this.disconnect_button.UseVisualStyleBackColor = true;
+            // 
+            // connectedWith_label
+            // 
+            this.connectedWith_label.AutoSize = true;
+            this.connectedWith_label.Location = new System.Drawing.Point(12, 306);
+            this.connectedWith_label.Name = "connectedWith_label";
+            this.connectedWith_label.Size = new System.Drawing.Size(77, 13);
+            this.connectedWith_label.TabIndex = 5;
+            this.connectedWith_label.Text = "Nie połączono";
+            // 
             // SelectWindow
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(278, 307);
+            this.ClientSize = new System.Drawing.Size(278, 329);
+            this.Controls.Add(this.connectedWith_label);
+            this.Controls.Add(this.disconnect_button);
             this.Controls.Add(this.listView_guests);
             this.Controls.Add(this.Label_Username);
             this.Controls.Add(this.label1);
@@ -78,6 +100,8 @@
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Label Label_Username;
         private System.Windows.Forms.ListView listView_guests;
+        private System.Windows.Forms.Button disconnect_button;
+        private System.Windows.Forms.Label connectedWith_label;
     }
 }
 

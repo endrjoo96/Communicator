@@ -14,8 +14,13 @@ namespace Communicator
     public partial class SelectWindow : Form
     {
         private static ObservableCollection<User> guestList = null;
+
         private ListenerTask listener;
         private CleanerTask cleaner;
+        private BroadcastTask broadcaster;
+        private TcpListenerTask tcplistener;
+        private TalkingTask talking;
+
         private static AppState appstate;
 
         public SelectWindow()
@@ -33,6 +38,11 @@ namespace Communicator
             cleaner = new CleanerTask();
             cleaner.RemovingIdlers += Cleaner_RemovingIdlers;
             cleaner.Run();
+            broadcaster = new BroadcastTask();
+            broadcaster.Run();
+            tcplistener = new TcpListenerTask();
+            tcplistener.ReceivedConnectionEvent += Tcplistener_ReceivedConnectionEvent;
+            tcplistener.Run();
 
             if (Label_Username.Text.Equals(""))
             {
@@ -51,6 +61,13 @@ namespace Communicator
             listView_guests.AutoResizeColumns(ColumnHeaderAutoResizeStyle.HeaderSize);
             User usr = new User("genericuser1", "0.0.0.0", true);
             guestList.Add(usr);
+        }
+
+        private void Tcplistener_ReceivedConnectionEvent()
+        {
+            appstate.isBusy = true;
+            talking = new TalkingTask();
+            talking.Run();
         }
 
         private void Cleaner_RemovingIdlers()
@@ -104,7 +121,8 @@ namespace Communicator
 
         public static void UpdateCurrentGuests(User arg)
         {
-            guestList.Add(arg);
+            if(arg.Nickname!=appstate.currentUsername)
+                guestList.Add(arg);
         }
     }
 }
