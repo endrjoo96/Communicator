@@ -15,10 +15,10 @@ using System.Windows.Forms;
 
 namespace Communicator
 {
-    class ListenerTask : Form
+    class ListenerTask 
     {
         private Thread task;
-        private bool stop = false;
+        private bool _stop = false;
 
         public ListenerTask()
         {
@@ -26,15 +26,13 @@ namespace Communicator
             task = new Thread(() =>
             {
                 List<User> guestsList = new List<User>();
-                bool _stop = false;
 
                 UdpClient client = new UdpClient(45000);
                 IPEndPoint remoteEndPoint = new IPEndPoint(IPAddress.Any, 0);
                 string currentUser = SelectWindow.GetAppState().currentUsername;
                 while (true)
                 {
-                    if(InvokeRequired)
-                        Invoke(new MethodInvoker(() => { _stop = stop; }));
+                        //Invoke(new MethodInvoker(() => { _stop = stop; }));
 
                     if (_stop) break;
 
@@ -47,11 +45,10 @@ namespace Communicator
                         if (sub.Equals(Definitions.BUSY)) { busy = true; }
                         User incomingUser = new User(data.Substring(data.IndexOf("|")+1), remoteEndPoint.Address, busy);
                         bool add = true;
+                        
+                           // Invoke(new MethodInvoker(() => { guestsList = SelectWindow.GetCurrentGuests().ToList(); }));
 
-                        if (InvokeRequired)
-                            Invoke(new MethodInvoker(() => { guestsList = SelectWindow.GetCurrentGuests().ToList(); }));
-
-                        //Parallel.Invoke(new Action(() => { guestsList = SelectWindow.GetCurrentGuests().ToList(); }));
+                        Parallel.Invoke(new Action(() => { guestsList = SelectWindow.GetCurrentGuests().ToList(); }));
 
                         foreach(User u in guestsList)
                         {
@@ -63,6 +60,7 @@ namespace Communicator
                                     {
                                         add = false;
                                         u.UpdateConnTime();
+                                        //TODO: odświeżanie listy, jeśli busy
                                         break;
                                     }
                                 }
@@ -70,9 +68,9 @@ namespace Communicator
                         }
                         if (add)
                         {
-                            if(InvokeRequired)
-                            Invoke(new MethodInvoker(() => { SelectWindow.UpdateCurrentGuests(incomingUser); }));
-                           // Parallel.Invoke(new Action(() => { SelectWindow.UpdateCurrentGuests(incomingUser); }));
+                            //if(InvokeRequired)
+                            //Invoke(new MethodInvoker(() => { SelectWindow.UpdateCurrentGuests(incomingUser); }));
+                            Parallel.Invoke(new Action(() => { SelectWindow.UpdateCurrentGuests(incomingUser); }));
                         }
                     }
                 }
@@ -87,7 +85,7 @@ namespace Communicator
 
         public void Terminate()
         {
-            stop = true;
+            _stop = true;
         }
     }
 }

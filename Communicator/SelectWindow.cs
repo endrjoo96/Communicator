@@ -5,6 +5,7 @@ using System.ComponentModel;
 using System.Data;
 using System.Drawing;
 using System.Linq;
+using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -66,8 +67,15 @@ namespace Communicator
         private void Tcplistener_ReceivedConnectionEvent()
         {
             appstate.isBusy = true;
-            talking = new TalkingTask(appstate.MachineIP);
+            talking = new TalkingTask(tcplistener.receivedIP);
             talking.Run();
+            string usr="";
+            foreach (User u in guestList.ToList())
+            {
+                if (u.Address.Equals(tcplistener.receivedIP)) { usr = u.Nickname; }
+            }
+            connectedWith_label.Text = "Połączono z " + usr;
+            disconnect_button.Enabled = true;
         }
 
         private void Cleaner_RemovingIdlers()
@@ -123,6 +131,13 @@ namespace Communicator
         {
             if(arg.Nickname!=appstate.currentUsername)
                 guestList.Add(arg);
+        }
+
+        private void listView_guests_DoubleClick(object sender, EventArgs e)
+        {
+            IPAddress address = IPAddress.Parse(listView_guests.SelectedItems[0].ImageKey);
+            SendRequestTask sendertask = new SendRequestTask() { IP = address };
+            sendertask.Run();
         }
     }
 }

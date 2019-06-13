@@ -55,14 +55,18 @@
             // 
             // listView_guests
             // 
+            this.listView_guests.GridLines = true;
             this.listView_guests.Location = new System.Drawing.Point(15, 25);
+            this.listView_guests.MultiSelect = false;
             this.listView_guests.Name = "listView_guests";
             this.listView_guests.Size = new System.Drawing.Size(251, 270);
             this.listView_guests.TabIndex = 3;
             this.listView_guests.UseCompatibleStateImageBehavior = false;
+            this.listView_guests.DoubleClick += new System.EventHandler(this.listView_guests_DoubleClick);
             // 
             // disconnect_button
             // 
+            this.disconnect_button.Enabled = false;
             this.disconnect_button.Location = new System.Drawing.Point(191, 301);
             this.disconnect_button.Name = "disconnect_button";
             this.disconnect_button.Size = new System.Drawing.Size(75, 23);

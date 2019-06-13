@@ -16,6 +16,8 @@ namespace Communicator
         public delegate void ReceivedConnection();
         public event ReceivedConnection ReceivedConnectionEvent;
 
+        public IPAddress receivedIP;
+
         private Thread task;
 
         public TcpListenerTask()
@@ -27,17 +29,28 @@ namespace Communicator
 
                 while (true)
                 {
-                    Byte[] rec = client.Receive(ref remoteEndPoint);
-                    string recstr = Encoding.ASCII.GetString(rec);
-                    string header = recstr.Substring(0, Definitions.WANT_TO_CONNECT.Length);
-                    if (header.Equals(Definitions.WANT_TO_CONNECT))
+                    if (!SelectWindow.GetAppState().isBusy)
                     {
-                        byte[] data = Toolbox.StringToByte(Definitions.OK_TALK + SelectWindow.GetAppState().currentUsername);
-                        client.Send(data, data.Length, new IPEndPoint(remoteEndPoint.Address, 45001));
+                        Byte[] rec = client.Receive(ref remoteEndPoint);
+                        string recstr = Encoding.ASCII.GetString(rec);
+                        string header = recstr.Substring(0, Definitions.WANT_TO_CONNECT.Length);
+                        if (header.Equals(Definitions.WANT_TO_CONNECT))
+                        {
+                            byte[] data = Toolbox.StringToByte(Definitions.OK_TALK + SelectWindow.GetAppState().currentUsername);
+                            client.Send(data, data.Length, new IPEndPoint(remoteEndPoint.Address, 45001));
 
-                        ReceivedConnectionEvent?.Invoke();
-                        client.Close();
-                        break;
+                            ReceivedConnectionEvent?.Invoke();
+                            client.Close();
+                            receivedIP = remoteEndPoint.Address;
+                            break;
+                        }
+                        else if (header.Equals(Definitions.OK_TALK))
+                        {
+                            ReceivedConnectionEvent?.Invoke();
+                            client.Close();
+                            receivedIP = remoteEndPoint.Address;
+                            break;
+                        }
                     }
                 }
 
