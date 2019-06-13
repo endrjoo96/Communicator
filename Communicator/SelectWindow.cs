@@ -66,7 +66,7 @@ namespace Communicator
         private void Tcplistener_ReceivedConnectionEvent()
         {
             appstate.isBusy = true;
-            talking = new TalkingTask();
+            talking = new TalkingTask(appstate.MachineIP);
             talking.Run();
         }
 

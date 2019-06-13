@@ -33,7 +33,8 @@ namespace Communicator
                 string currentUser = SelectWindow.GetAppState().currentUsername;
                 while (true)
                 {
-                    Invoke(new MethodInvoker(() => { _stop = stop; }));
+                    if(InvokeRequired)
+                        Invoke(new MethodInvoker(() => { _stop = stop; }));
 
                     if (_stop) break;
 
@@ -47,7 +48,8 @@ namespace Communicator
                         User incomingUser = new User(data.Substring(data.IndexOf("|")+1), remoteEndPoint.Address, busy);
                         bool add = true;
 
-                        Invoke(new MethodInvoker(() => { guestsList = SelectWindow.GetCurrentGuests().ToList(); }));
+                        if (InvokeRequired)
+                            Invoke(new MethodInvoker(() => { guestsList = SelectWindow.GetCurrentGuests().ToList(); }));
 
                         //Parallel.Invoke(new Action(() => { guestsList = SelectWindow.GetCurrentGuests().ToList(); }));
 
@@ -68,8 +70,9 @@ namespace Communicator
                         }
                         if (add)
                         {
+                            if(InvokeRequired)
                             Invoke(new MethodInvoker(() => { SelectWindow.UpdateCurrentGuests(incomingUser); }));
-                            //Parallel.Invoke(new Action(() => { SelectWindow.UpdateCurrentGuests(incomingUser); }));
+                           // Parallel.Invoke(new Action(() => { SelectWindow.UpdateCurrentGuests(incomingUser); }));
                         }
                     }
                 }
