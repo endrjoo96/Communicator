@@ -13,7 +13,7 @@ using NAudio.Wave;
 
 namespace Communicator
 {
-    class TalkingTask : Form
+    class TalkingTask
     {
         private Thread task_send;
         private Thread task_play;
@@ -30,6 +30,7 @@ namespace Communicator
                 bool recording = false;
                 bool stop = false;
 
+                
                 WaveInEvent wi = new WaveInEvent();
                 wi.DeviceNumber = 0;
                 wi.WaveFormat = new WaveFormat(Toolbox.RATE, 2);
@@ -38,7 +39,7 @@ namespace Communicator
 
                 while (true)
                 {
-                    Invoke(new MethodInvoker(() => { stop = _stop; }));
+                    
                     if (stop)
                     {
                         if (recording)
@@ -70,8 +71,9 @@ namespace Communicator
 
             task_play = new Thread(() =>
             {
-                UdpClient client = new UdpClient(45001);
-                IPEndPoint remoteEndPoint = new IPEndPoint(IP, 0);
+                UdpClient client = new UdpClient(45002);
+                IPEndPoint remoteEndPoint = new IPEndPoint(IPAddress.Any, 0);
+                WaveOutEvent wo = new WaveOutEvent();
 
                 while (true)
                 {
@@ -84,8 +86,8 @@ namespace Communicator
                     }
                     else
                     {
-
-                        //TODO: PLAY
+                        wo.Init(new RawSourceWaveStream(rec, 0, rec.Length, new WaveFormat(Toolbox.RATE, 1)));
+                        wo.Play();
                     }
                 }
 
@@ -97,8 +99,8 @@ namespace Communicator
         private void AudioDataAvailable(object sender, WaveInEventArgs e)
         {
             UdpClient client = new UdpClient();
-            IPEndPoint remoteEndPoint = new IPEndPoint(IP, 45001);
-            client.Send(e.Buffer, e.BytesRecorded);
+            IPEndPoint remoteEndPoint = new IPEndPoint(IPAddress.Broadcast, 45002);
+            client.Send(e.Buffer, e.BytesRecorded, remoteEndPoint);
         }
 
         public void Run()

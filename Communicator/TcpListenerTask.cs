@@ -32,6 +32,7 @@ namespace Communicator
                     if (!SelectWindow.GetAppState().isBusy)
                     {
                         Byte[] rec = client.Receive(ref remoteEndPoint);
+
                         string recstr = Encoding.ASCII.GetString(rec);
                         string header = recstr.Substring(0, Definitions.WANT_TO_CONNECT.Length);
                         if (header.Equals(Definitions.WANT_TO_CONNECT))
@@ -48,7 +49,9 @@ namespace Communicator
                         {
                             ReceivedConnectionEvent?.Invoke();
                             client.Close();
-                            receivedIP = remoteEndPoint.Address;
+
+                                receivedIP = remoteEndPoint.Address;
+                            
                             break;
                         }
                     }

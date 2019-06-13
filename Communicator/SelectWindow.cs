@@ -40,7 +40,6 @@ namespace Communicator
             cleaner.RemovingIdlers += Cleaner_RemovingIdlers;
             cleaner.Run();
             broadcaster = new BroadcastTask();
-            broadcaster.Run();
             tcplistener = new TcpListenerTask();
             tcplistener.ReceivedConnectionEvent += Tcplistener_ReceivedConnectionEvent;
             tcplistener.Run();
@@ -54,14 +53,12 @@ namespace Communicator
                     appstate.currentUsername = form.result;
                 }
             }
-
+            broadcaster.Run();
             listView_guests.Scrollable = true;
             listView_guests.View = View.Details;
             listView_guests.Columns.Add(new ColumnHeader { Text = "", Name = "col" });
             listView_guests.HeaderStyle = ColumnHeaderStyle.None;
             listView_guests.AutoResizeColumns(ColumnHeaderAutoResizeStyle.HeaderSize);
-            User usr = new User("genericuser1", "0.0.0.0", true);
-            guestList.Add(usr);
         }
 
         private void Tcplistener_ReceivedConnectionEvent()
@@ -74,8 +71,11 @@ namespace Communicator
             {
                 if (u.Address.Equals(tcplistener.receivedIP)) { usr = u.Nickname; }
             }
-            connectedWith_label.Text = "Połączono z " + usr;
-            disconnect_button.Enabled = true;
+            if (InvokeRequired)
+                Invoke(new MethodInvoker(() => {
+                    connectedWith_label.Text = "Połączono z " + usr;
+                    disconnect_button.Enabled = true;
+                }));
         }
 
         private void Cleaner_RemovingIdlers()
